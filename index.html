@@ -461,30 +461,35 @@ function detectPositions(){
 }
 detectPositions();
 
-/* ==========  CITATIONS (Semantic Scholar batch)  ========== */
+/* ==========  CITATIONS (S2 individual GET — POST batch blocked by CORS)  ========== */
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 async function loadCitations(){
   const cards=Array.from(document.querySelectorAll('.card[data-arxiv]'));
-  const ids=cards.map(c=>'ARXIV:'+c.dataset.arxiv);
-  const k='paper-cites-batch-v1';
-  let data=cacheGet(k);
-  if(!data){
-    try{
-      const r=await fetch('https://api.semanticscholar.org/graph/v1/paper/batch?fields=citationCount',{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids})
-      });
-      if(!r.ok) throw 0;
-      data=await r.json();
-      cacheSet(k,data);
-    }catch(e){return}
-  }
-  cards.forEach((card,i)=>{
-    const cite=data[i]?.citationCount;
-    if(cite==null) return;
+  const k='cites-v2';
+  const cache=cacheGet(k)||{};
+  let dirty=false;
+  for(const card of cards){
+    const id=card.dataset.arxiv;
+    let cite=cache[id];
+    if(cite===undefined){
+      try{
+        const r=await fetch('https://api.semanticscholar.org/graph/v1/paper/arXiv:'+id+'?fields=citationCount');
+        if(r.status===429){await sleep(3000);continue}
+        if(!r.ok){cache[id]=null;dirty=true;continue}
+        const d=await r.json();
+        cite=d.citationCount??null;
+        cache[id]=cite;dirty=true;
+        await sleep(1200);
+      }catch(e){continue}
+    }
+    if(cite==null) continue;
     card.dataset.citations=String(cite);
     const links=card.querySelector('.card-links');
+    if(links.querySelector('.cites')) continue;
     const b=document.createElement('span');b.className='cites';b.textContent='↑ '+cite;
     links.appendChild(b);
-  });
+  }
+  if(dirty) cacheSet(k,cache);
   if(state.sort==='citations') apply();
 }
 
@@ -548,10 +553,16 @@ document.querySelectorAll('.filter[data-sort]').forEach(b=>{
 });
 document.getElementById('search').addEventListener('input',e=>{state.q=e.target.value;apply()});
 
-/* ==========  ABSTRACT POPOVER  ========== */
+/* ==========  ABSTRACT POPOVER (OpenAlex — S2 hides abstracts without API key)  ========== */
 const pop=document.getElementById('pop'), popBody=document.getElementById('pop-body');
 const abCache={};
 let hoverTimer=null;
+function reconstructAbstract(inv){
+  if(!inv) return null;
+  const arr=[];
+  for(const w in inv) for(const p of inv[w]) arr[p]=w;
+  return arr.filter(Boolean).join(' ');
+}
 async function showAbstract(card,evt){
   const id=card.dataset.arxiv;
   if(!id) return;
@@ -560,15 +571,15 @@ async function showAbstract(card,evt){
   positionPop(evt);
   let abs=abCache[id];
   if(!abs){
-    const k='abs-'+id;
+    const k='abs-oa-'+id;
     let cached=cacheGet(k);
-    if(cached){abs=cached.abstract||'(no abstract on Semantic Scholar)'}
+    if(cached){abs=cached.abstract||'(no abstract available)'}
     else{
       try{
-        const r=await fetch('https://api.semanticscholar.org/graph/v1/paper/arXiv:'+id+'?fields=abstract');
+        const r=await fetch('https://api.openalex.org/works/doi:10.48550/arXiv.'+id+'?select=abstract_inverted_index&mailto=chengsong@wustl.edu');
         if(!r.ok) throw 0;
         const d=await r.json();
-        abs=d.abstract||'(no abstract on Semantic Scholar)';
+        abs=reconstructAbstract(d.abstract_inverted_index)||'(no abstract available)';
         cacheSet(k,{abstract:abs});
       }catch(e){abs='(could not load abstract)'}
     }
