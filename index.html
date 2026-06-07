@@ -253,10 +253,10 @@
 
   <!-- STATS (auto-updated) -->
   <div class="stats">
-    <div class="stat"><div class="stat-num loading" id="stat-citations"></div><div class="stat-label">Citations</div><div class="stat-source">Semantic Scholar</div></div>
-    <div class="stat"><div class="stat-num loading" id="stat-hindex"></div><div class="stat-label">h-index</div><div class="stat-source">Semantic Scholar</div></div>
+    <div class="stat"><div class="stat-num" id="stat-citations">1311</div><div class="stat-label">Citations</div><div class="stat-source">Google Scholar &middot; as of Jun 2026</div></div>
+    <div class="stat"><div class="stat-num" id="stat-hindex">15</div><div class="stat-label">h-index</div><div class="stat-source">Google Scholar &middot; as of Jun 2026</div></div>
     <div class="stat"><div class="stat-num" id="stat-pubs">16</div><div class="stat-label">Publications</div><div class="stat-source">peer-reviewed</div></div>
-    <div class="stat"><div class="stat-num" id="stat-preprints">10</div><div class="stat-label">Active Preprints</div><div class="stat-source">arXiv</div></div>
+    <div class="stat"><div class="stat-num" id="stat-preprints">11</div><div class="stat-label">Active Preprints</div><div class="stat-source">arXiv</div></div>
   </div>
 
   <!-- NEWS -->
@@ -332,6 +332,7 @@
       <div class="card" data-venue="ACL" data-year="2021"><div class="card-row"><span class="venue">ACL</span><span class="year">2021</span></div><div class="card-title">Revisiting the Negative Data of Distantly Supervised Relation Extraction</div><div class="card-authors">Chenhao Xie, Jiaqing Liang, Jingping Liu, <span class="me">Chengsong Huang</span>, Wenhao Huang, Yanghua Xiao</div><div class="card-links"><a href="https://www.aclanthology.org/2021.acl-long.277.pdf">paper</a></div></div>
 
       <!-- PREPRINTS -->
+      <div class="card" data-venue="arXiv" data-year="2026" data-arxiv="2605.21468"><div class="card-row"><span class="venue preprint">PREPRINT</span><span class="year">2026 · arXiv 2605.21468</span></div><div class="card-title">RELEX: You Only Need Minimal RLVR Training: Extrapolating LLMs via Rank-1 Trajectories</div><div class="card-authors">Zhepei Wei, Xinyu Zhu, Wei-Lin Chen, <span class="me">Chengsong Huang</span>, Jiaxin Huang, Yu Meng</div><div class="card-links"><a href="https://arxiv.org/abs/2605.21468">paper</a><a href="https://github.com/weizhepei/RELEX">code</a></div></div>
       <div class="card" data-venue="arXiv" data-year="2026" data-arxiv="2605.09959"><div class="card-row"><span class="venue preprint">PREPRINT</span><span class="year">2026 · arXiv 2605.09959</span></div><div class="card-title">G-Zero: Self-Play for Open-Ended Generation from Zero Data</div><div class="card-authors"><span class="me">Chengsong Huang</span>, Haolin Liu, Tong Zheng, Runpeng Dai, Langlin Huang, Jinyuan Li, Zongxia Li, Zhepei Wei, Yu Meng, Jiaxin Huang</div><div class="card-links"><a href="https://arxiv.org/abs/2605.09959">paper</a></div></div>
       <div class="card" data-venue="arXiv" data-year="2026" data-arxiv="2605.08083"><div class="card-row"><span class="venue preprint">PREPRINT</span><span class="year">2026 · arXiv 2605.08083</span></div><div class="card-title">LLMs Improving LLMs: Agentic Discovery for Test-Time Scaling</div><div class="card-authors">Tong Zheng, Haolin Liu, <span class="me">Chengsong Huang</span>, Huiwen Bao, Sheng Zhang, Rui Liu, Runpeng Dai, Ruibo Chen, Chenxi Liu, Tianyi Xiong, Xidong Wu, Hongming Zhang, Heng Huang</div><div class="card-links"><a href="https://arxiv.org/abs/2605.08083">paper</a></div></div>
       <div class="card" data-venue="arXiv" data-year="2026" data-arxiv="2605.05566"><div class="card-row"><span class="venue preprint">PREPRINT</span><span class="year">2026 · arXiv 2605.05566</span></div><div class="card-title">Nonsense Helps: Prompt Space Perturbation Broadens Reasoning Exploration</div><div class="card-authors">Langlin Huang, <span class="me">Chengsong Huang</span>, Jinyuan Li, Donghong Cai, Yuyi Yang, Jiaxin Huang</div><div class="card-links"><a href="https://arxiv.org/abs/2605.05566">paper</a></div></div>
@@ -618,7 +619,7 @@ document.querySelectorAll('.card[data-arxiv]').forEach(c=>{
 })();
 
 /* ==========  INIT  ========== */
-loadStats();
+// loadStats(); // disabled: stats are hardcoded from Google Scholar
 loadStars();
 </script>
 </body>
