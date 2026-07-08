@@ -263,7 +263,8 @@
   <section>
     <div class="sec-head"><h2>Latest <span class="accent">News</span></h2><span class="sec-meta">// updates</span></div>
     <div class="news">
-      <div class="news-card"><div class="news-date">May 2026</div><div class="news-text">New preprints <a href="https://arxiv.org/abs/2605.09959">G-Zero</a> and <a href="https://arxiv.org/abs/2605.05566">Nonsense Helps</a> are released.</div></div>
+      <div class="news-card"><div class="news-date">Jun 2026</div><div class="news-text">New preprint <a href="https://arxiv.org/abs/2606.03102">Small RL Controller, Large Language Model</a> is released.</div></div>
+      <div class="news-card"><div class="news-date">May 2026</div><div class="news-text">New preprints released: <a href="https://arxiv.org/abs/2605.09959">G-Zero</a>, <a href="https://arxiv.org/abs/2605.21468">RELEX</a>, <a href="https://arxiv.org/abs/2605.15529">Process Rewards</a>, and <a href="https://arxiv.org/abs/2605.05566">Nonsense Helps</a>.</div></div>
       <div class="news-card"><div class="news-date">May 2026</div><div class="news-text"><a href="https://arxiv.org/abs/2602.03845">Parallel-Probe</a> and <a href="https://arxiv.org/abs/2602.04145">Training Data Efficiency in Multimodal PRM</a> accepted to ICML 2026.</div></div>
       <div class="news-card"><div class="news-date">Apr 2026</div><div class="news-text">Passed my Ph.D. proposal. 🎉</div></div>
       <div class="news-card"><div class="news-date">Feb 2026</div><div class="news-text"><a href="https://arxiv.org/abs/2511.15661">VisPlay</a> accepted to CVPR 2026.</div></div>
@@ -273,7 +274,7 @@
 
   <!-- RESEARCH -->
   <section>
-    <div class="sec-head"><h2>Research <span class="accent">Portfolio</span></h2><span class="sec-meta" id="result-count">// 26 papers</span></div>
+    <div class="sec-head"><h2>Research <span class="accent">Portfolio</span></h2><span class="sec-meta" id="result-count">// 29 papers</span></div>
 
     <div class="controls">
       <div class="search-bar">
@@ -622,6 +623,18 @@ document.querySelectorAll('.card[data-arxiv]').forEach(c=>{
 
 /* ==========  INIT  ========== */
 // loadStats(); // disabled: stats are hardcoded from Google Scholar
+
+// Derive Publications / Preprints counts from the grid so they stay in sync
+// with cards added or removed.
+(function refreshPaperStats(){
+  const cards=document.querySelectorAll('#grid .card');
+  let pubs=0, prep=0;
+  cards.forEach(c=>{ (c.dataset.venue==='arXiv'?prep++:pubs++) });
+  document.getElementById('stat-pubs').textContent=pubs;
+  document.getElementById('stat-preprints').textContent=prep;
+})();
+
+apply();      // set the "// N papers" header count from the actual grid
 loadStars();
 </script>
 </body>
