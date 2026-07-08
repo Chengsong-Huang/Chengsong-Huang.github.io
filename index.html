@@ -465,35 +465,19 @@ function detectPositions(){
 }
 detectPositions();
 
-/* ==========  CITATIONS (S2 individual GET — POST batch blocked by CORS)  ========== */
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-async function loadCitations(){
-  const cards=Array.from(document.querySelectorAll('.card[data-arxiv]'));
-  const k='cites-v2';
-  const cache=cacheGet(k)||{};
-  let dirty=false;
-  for(const card of cards){
-    const id=card.dataset.arxiv;
-    let cite=cache[id];
-    if(cite===undefined){
-      try{
-        const r=await fetch('https://api.semanticscholar.org/graph/v1/paper/arXiv:'+id+'?fields=citationCount');
-        if(r.status===429){await sleep(3000);continue}
-        if(!r.ok){cache[id]=null;dirty=true;continue}
-        const d=await r.json();
-        cite=d.citationCount??null;
-        cache[id]=cite;dirty=true;
-        await sleep(1200);
-      }catch(e){continue}
-    }
-    if(cite==null) continue;
-    card.dataset.citations=String(cite);
+/* ==========  CITATIONS (Google Scholar, injected server-side)  ========== */
+// The daily GitHub Actions cron populates data-citations="N" on every card
+// from Google Scholar via SerpApi. This function just renders the badge from
+// the attribute — no network calls, no rate limits, no CORS issues.
+function loadCitations(){
+  document.querySelectorAll('.card[data-citations]').forEach(card=>{
+    const cite=card.dataset.citations;
+    if(cite==null||cite==='') return;
     const links=card.querySelector('.card-links');
-    if(links.querySelector('.cites')) continue;
+    if(!links||links.querySelector('.cites')) return;
     const b=document.createElement('span');b.className='cites';b.textContent='↑ '+cite;
     links.appendChild(b);
-  }
-  if(dirty) cacheSet(k,cache);
+  });
   if(state.sort==='citations') apply();
 }
 
@@ -634,7 +618,8 @@ document.querySelectorAll('.card[data-arxiv]').forEach(c=>{
   document.getElementById('stat-preprints').textContent=prep;
 })();
 
-apply();      // set the "// N papers" header count from the actual grid
+apply();         // set the "// N papers" header count from the actual grid
+loadCitations(); // render "↑ N" badges from server-side data-citations attr
 loadStars();
 </script>
 </body>
