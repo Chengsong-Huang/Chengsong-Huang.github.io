@@ -95,7 +95,7 @@ def rewrite_html(html: str, citations: int, h_index: int, stamp: str) -> str:
         new_html,
     )
     new_html = re.sub(
-        r"(Google Scholar &middot; as of )[A-Za-z]+ \d{4}",
+        r"(Google Scholar &middot; as of )[A-Za-z]+ (?:\d{1,2}, )?\d{4}",
         rf"\g<1>{stamp}",
         new_html,
     )
@@ -109,7 +109,8 @@ def main() -> int:
         return 0
 
     html = INDEX_HTML.read_text()
-    stamp = datetime.now(timezone.utc).strftime("%b %Y")
+    now = datetime.now(timezone.utc)
+    stamp = f"{now.strftime('%b')} {now.day}, {now.year}"  # e.g., "Jul 8, 2026"
     new_html = rewrite_html(html, citations, h_index, stamp)
 
     if new_html == html:
