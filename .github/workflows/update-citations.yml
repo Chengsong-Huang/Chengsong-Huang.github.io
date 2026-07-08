@@ -2,8 +2,8 @@ name: Update citation stats
 
 on:
   schedule:
-    # Every Monday at 08:00 UTC (~03:00 US Central)
-    - cron: "0 8 * * 1"
+    # Every day at 08:00 UTC (~03:00 US Central)
+    - cron: "0 8 * * *"
   workflow_dispatch: {}
 
 permissions:
