@@ -5,6 +5,12 @@ on:
     # Every day at 08:00 UTC (~03:00 US Central)
     - cron: "0 8 * * *"
   workflow_dispatch: {}
+  push:
+    branches: [master]
+    paths:
+      - "scripts/update_citations.py"
+      - ".github/workflows/update-citations.yml"
+      - "index.html"
 
 permissions:
   contents: write
