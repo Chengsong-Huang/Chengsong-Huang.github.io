@@ -1,0 +1,48 @@
+name: Update citation stats
+
+on:
+  schedule:
+    # Every Monday at 08:00 UTC (~03:00 US Central)
+    - cron: "0 8 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-citations
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --quiet --upgrade pip
+          # scholarly is the free backend; google-search-results is only
+          # imported if the SERPAPI_KEY secret is configured.
+          pip install --quiet "scholarly>=1.7.11" "google-search-results>=2.4.2"
+
+      - name: Refresh stats
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: python scripts/update_citations.py
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet index.html; then
+            echo "No stat changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "chore: auto-refresh Google Scholar stats"
+          git push
