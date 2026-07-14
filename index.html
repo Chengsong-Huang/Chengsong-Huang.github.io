@@ -476,7 +476,7 @@ function loadCitations(){
     if(cite==null||cite==='') return;
     const links=card.querySelector('.card-links');
     if(!links||links.querySelector('.cites')) return;
-    const b=document.createElement('span');b.className='cites';b.textContent='↑ '+cite;
+    const b=document.createElement('span');b.className='cites';b.textContent='cited by '+cite;
     links.appendChild(b);
   });
   if(state.sort==='citations') apply();
