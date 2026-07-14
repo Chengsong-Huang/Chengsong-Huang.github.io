@@ -309,7 +309,7 @@
       <div class="filter-group"><span class="label">Sort:</span>
         <button class="filter active" data-sort="newest">newest first</button>
         <button class="filter" data-sort="citations">by citations</button>
-        <button class="filter" data-sort="stars">by ★ stars</button>
+        <button class="filter" data-sort="stars">by GitHub ★</button>
         <button class="filter" data-sort="role">by role (1st first)</button>
       </div>
     </div>
@@ -437,7 +437,7 @@ async function loadStars(){
     }
     const s=document.createElement('span');
     s.className='stars';
-    s.textContent='★ '+(d.stargazers_count??'?');
+    s.textContent='★ '+(d.stargazers_count??'?')+' GitHub stars';
     a.parentNode.insertBefore(s,a.nextSibling);
     const card=a.closest('.card');
     const cur=+card.dataset.stars||0;
