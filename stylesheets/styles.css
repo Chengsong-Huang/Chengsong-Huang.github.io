@@ -1,13 +1,116 @@
+/* ---------- Theme colors (only these change between light / dark) ---------- */
+:root {
+  color-scheme: light;
+  --bg: #fff;
+  --text: #595959;
+  --heading: #222;
+  --h2: #393939;
+  --h3: #494949;
+  --link: #39c;
+  --link-hover: #069;
+  --muted: #777;
+  --border: #e5e5e5;
+  --code-text: #333;
+  --code-bg: #f8f8f8;
+  --nav-bg: #f4f4f4;
+  --nav-border: #e0e0e0;
+  --nav-text: #999;
+  --nav-active-bg: #f0f0f0;
+  --dt: #444;
+  --strong: #222;
+  --toggle-bg: #f4f4f4;
+  --toggle-border: #e0e0e0;
+  --toggle-text: #595959;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1b1b1b;
+  --text: #c8c8c8;
+  --heading: #f0f0f0;
+  --h2: #e4e4e4;
+  --h3: #d8d8d8;
+  --link: #6cb6e6;
+  --link-hover: #9fd0f2;
+  --muted: #9a9a9a;
+  --border: #3a3a3a;
+  --code-text: #e0e0e0;
+  --code-bg: #262626;
+  --nav-bg: #262626;
+  --nav-border: #3a3a3a;
+  --nav-text: #9a9a9a;
+  --nav-active-bg: #2e2e2e;
+  --dt: #d0d0d0;
+  --strong: #f0f0f0;
+  --toggle-bg: #262626;
+  --toggle-border: #3a3a3a;
+  --toggle-text: #c8c8c8;
+}
+
+/* Follow the OS setting when the visitor hasn't chosen explicitly */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1b1b1b;
+    --text: #c8c8c8;
+    --heading: #f0f0f0;
+    --h2: #e4e4e4;
+    --h3: #d8d8d8;
+    --link: #6cb6e6;
+    --link-hover: #9fd0f2;
+    --muted: #9a9a9a;
+    --border: #3a3a3a;
+    --code-text: #e0e0e0;
+    --code-bg: #262626;
+    --nav-bg: #262626;
+    --nav-border: #3a3a3a;
+    --nav-text: #9a9a9a;
+    --nav-active-bg: #2e2e2e;
+    --dt: #d0d0d0;
+    --strong: #f0f0f0;
+    --toggle-bg: #262626;
+    --toggle-border: #3a3a3a;
+    --toggle-text: #c8c8c8;
+  }
+}
+
+/* Theme toggle button: fixed, does not take part in page layout */
+.theme-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  border: 1px solid var(--toggle-border);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  border-radius: 5px;
+  padding: 4px 8px;
+  font: 12px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  color: var(--link);
+}
+.theme-toggle .icon-moon,
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+.theme-toggle .icon-sun,
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun  { display: inline; }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+}
+
 body {
-  background-color: #fff;
+  background-color: var(--bg);
   padding:50px;
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  color:#595959;
+  color:var(--text);
   font-weight:400;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color:#222;
+  color:var(--heading);
   margin:0 0 20px;
 }
 
@@ -25,33 +128,33 @@ h1 {
 }
 
 h2 {
-  color:#393939;
+  color:var(--h2);
   font-weight: 500;
 }
 
 h3, h4, h5, h6 {
-  color:#494949;
+  color:var(--h3);
   font-weight: 500;
 }
 
 a {
-  color:#39c;
+  color:var(--link);
   text-decoration:none;
 }
 
 a:hover {
-  color:#069;
+  color:var(--link-hover);
 }
 
 a small {
   font-size:11px;
-  color:#777;
+  color:var(--muted);
   margin-top:-0.3em;
   display:block;
 }
 
 a:hover small {
-  color:#777;
+  color:var(--muted);
 }
 
 .wrapper {
@@ -60,7 +163,7 @@ a:hover small {
 }
 
 blockquote {
-  border-left:1px solid #e5e5e5;
+  border-left:1px solid var(--border);
   margin:0;
   padding:0 0 0 20px;
   font-style:italic;
@@ -68,14 +171,14 @@ blockquote {
 
 code, pre {
   font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal, Consolas, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
-  color:#333;
+  color:var(--code-text);
 }
 
 pre {
   padding:8px 15px;
-  background: #f8f8f8;
+  background: var(--code-bg);
   border-radius:5px;
-  border:1px solid #e5e5e5;
+  border:1px solid var(--border);
   overflow-x: auto;
 }
 
@@ -87,16 +190,16 @@ table {
 th, td {
   text-align:left;
   padding:5px 10px;
-  border-bottom:1px solid #e5e5e5;
+  border-bottom:1px solid var(--border);
 }
 
 dt {
-  color:#444;
+  color:var(--dt);
   font-weight:500;
 }
 
 th {
-  color:#444;
+  color:var(--dt);
 }
 
 img {
@@ -114,16 +217,16 @@ header ul {
   list-style:none;
   height:40px;
   padding:0;
-  background: #f4f4f4;
+  background: var(--nav-bg);
   border-radius:5px;
-  border:1px solid #e0e0e0;
+  border:1px solid var(--nav-border);
   width:270px;
 }
 
 header li {
   width:89px;
   float:left;
-  border-right:1px solid #e0e0e0;
+  border-right:1px solid var(--nav-border);
   height:40px;
 }
 
@@ -138,7 +241,7 @@ header li:last-child a {
 header ul a {
   line-height:1;
   font-size:11px;
-  color:#999;
+  color:var(--nav-text);
   display:block;
   text-align:center;
   padding-top:6px;
@@ -146,15 +249,15 @@ header ul a {
 }
 
 header ul a:hover {
-  color:#999;
+  color:var(--nav-text);
 }
 
 header ul a:active {
-  background-color:#f0f0f0;
+  background-color:var(--nav-active-bg);
 }
 
 strong {
-  color:#222;
+  color:var(--strong);
   font-weight:500;
 }
 
@@ -166,7 +269,7 @@ header ul li + li + li {
 header ul a strong {
   font-size:14px;
   display:block;
-  color:#222;
+  color:var(--strong);
 }
 
 section {
@@ -181,7 +284,7 @@ small {
 
 hr {
   border:0;
-  background:#e5e5e5;
+  background:var(--border);
   height:1px;
   margin:0 0 20px;
 }
@@ -212,7 +315,7 @@ footer {
   }
 
   section {
-    border:1px solid #e5e5e5;
+    border:1px solid var(--border);
     border-width:1px 0;
     padding:20px 0;
     margin:0 0 20px;
