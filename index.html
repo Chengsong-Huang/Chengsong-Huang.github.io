@@ -478,7 +478,8 @@ function detectPositions(){
     const html=a.innerHTML;
     const meIdx=html.indexOf('<span class="me"');
     const commas=(html.substring(0,meIdx).match(/,/g)||[]).length;
-    if(commas===0) card.dataset.position=coFirst?'co-first':'first';
+    if(coFirst) card.dataset.position='co-first';
+    else if(commas===0) card.dataset.position='first';
     else if(commas===1) card.dataset.position='second';
     else card.dataset.position='other';
   });
