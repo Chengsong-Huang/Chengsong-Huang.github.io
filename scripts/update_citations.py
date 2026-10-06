@@ -15,6 +15,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,8 +25,12 @@ INDEX_HTML = ROOT / "index.html"
 
 
 def _normalize_title(t: str) -> str:
-    """Lowercase and strip everything except alphanumerics — for fuzzy title matching."""
-    return re.sub(r"[^a-z0-9]", "", (t or "").lower())
+    """Lowercase and strip everything except alphanumerics — for fuzzy title matching.
+
+    NFKC first so typographic forms match Scholar's plain text (e.g. "Benchmark²"
+    vs "Benchmark^ 2").
+    """
+    return re.sub(r"[^a-z0-9]", "", unicodedata.normalize("NFKC", t or "").lower())
 
 
 def fetch_via_serpapi(key: str) -> tuple[tuple[int, int], dict[str, int]] | tuple[None, None]:
