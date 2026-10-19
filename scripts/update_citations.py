@@ -33,6 +33,23 @@ def _normalize_title(t: str) -> str:
     return re.sub(r"[^a-z0-9]", "", unicodedata.normalize("NFKC", t or "").lower())
 
 
+_ARXIV_ID = re.compile(r"arXiv:(\d{4}\.\d{4,5})", re.IGNORECASE)
+
+
+def _add_paper(papers: dict[str, int], title: str, venue: str, cites: int) -> None:
+    """Index a Scholar entry by normalized title and, when its venue line names an
+    arXiv preprint ("arXiv preprint arXiv:2603.09206, 2026"), by "arxiv:<id>" too.
+
+    The arXiv key survives a paper being retitled for camera-ready, which title
+    matching does not (e.g. MM-Zero, renamed for EMNLP 2026).
+    """
+    papers[_normalize_title(title)] = cites
+    m = _ARXIV_ID.search(venue or "")
+    if m:
+        key = "arxiv:" + m.group(1)
+        papers[key] = max(cites, papers.get(key, 0))
+
+
 def fetch_via_serpapi(key: str) -> tuple[tuple[int, int], dict[str, int]] | tuple[None, None]:
     """Return ((citations, h_index), {normalized_title: paper_citation_count}) or (None, None).
 
@@ -74,7 +91,7 @@ def fetch_via_serpapi(key: str) -> tuple[tuple[int, int], dict[str, int]] | tupl
             for a in articles:
                 title = a.get("title", "") or ""
                 cites = int((a.get("cited_by") or {}).get("value", 0) or 0)
-                papers[_normalize_title(title)] = cites
+                _add_paper(papers, title, a.get("publication", "") or "", cites)
             if len(articles) < 100:
                 break
             start += len(articles)
@@ -101,8 +118,13 @@ def fetch_via_scholarly() -> tuple[tuple[int, int], dict[str, int]] | tuple[None
             return None, None
         papers: dict[str, int] = {}
         for p in author.get("publications", []) or []:
-            title = (p.get("bib") or {}).get("title", "") or ""
-            papers[_normalize_title(title)] = int(p.get("num_citations") or 0)
+            bib = p.get("bib") or {}
+            _add_paper(
+                papers,
+                bib.get("title", "") or "",
+                bib.get("citation", "") or "",
+                int(p.get("num_citations") or 0),
+            )
         return (citations, h_index), papers
     except Exception as e:
         print(f"scholarly fetch failed: {e}", file=sys.stderr)
@@ -141,12 +163,12 @@ def rewrite_html(html: str, citations: int, h_index: int, stamp: str) -> str:
 
 
 def update_card_citations(html: str, papers: dict[str, int]) -> tuple[str, int]:
-    """For every research-card line, look up its title in `papers` and inject or
-    refresh a `data-citations="N"` attribute. Return (new_html, updated_count).
+    """For every research-card line, look up its citations in `papers` and inject
+    or refresh a `data-citations="N"` attribute. Return (new_html, updated_count).
 
     Cards live one-per-line in index.html, so line-based rewriting is safe.
-    We try exact normalized-title match first, then a 30-char prefix fallback
-    for the occasional Scholar/site title mismatch.
+    Lookup order: the card's data-arxiv id, then exact normalized title, then a
+    30-char title prefix for the occasional Scholar/site title mismatch.
     """
     lines = html.splitlines(keepends=True)
     updated = 0
@@ -157,7 +179,10 @@ def update_card_citations(html: str, papers: dict[str, int]) -> tuple[str, int]:
         if not m:
             continue
         title_norm = _normalize_title(m.group(1))
-        cites = papers.get(title_norm)
+        arxiv = re.search(r'data-arxiv="([^"]+)"', line)
+        cites = papers.get("arxiv:" + arxiv.group(1)) if arxiv else None
+        if cites is None:
+            cites = papers.get(title_norm)
         if cites is None:
             for k, v in papers.items():
                 if len(title_norm) >= 30 and len(k) >= 30 and title_norm[:30] == k[:30]:
