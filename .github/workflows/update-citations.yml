@@ -51,4 +51,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git commit -m "chore: auto-refresh Google Scholar stats"
-          git push
+          # Retry: the remote may have moved on, or GitHub may reject a push
+          # transiently (e.g. "fatal error in commit_refs_rules").
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            echo "Push attempt $i failed; retrying in 20s..."
+            sleep 20
+          done
+          exit 1
